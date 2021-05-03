@@ -8,7 +8,7 @@ Python - Script that shows Daily Information of **Horoscope & Numerology**
 
 # Example Main Usage:
 
-```sh
+```bash
 git clone https://github.com/kenny-kvibe/py-daily-info
 python ./py-daily-info/main.py 1991-12-31
 ```
