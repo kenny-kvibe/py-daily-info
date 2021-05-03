@@ -102,7 +102,8 @@ class Gui:
 
 	def button_click(self) -> ...:
 		"""\nDisplays the text and destroys the button, returns self.\n"""
-		self.text_label.config(text=self.text, relief=tk.RAISED, padx=10, wraplength=self.w-24)
+		self.frame.config(padx=20, pady=20)
+		self.text_label.config(text=self.set_text(self.text).text, relief=tk.RAISED, padx=10, wraplength=self.w-24)
 
 		size: int = 512
 		pos: tuple[int, int] = (self.root.winfo_screenwidth()//2 - size//2, self.root.winfo_screenheight()//2 - size//2)
@@ -133,11 +134,9 @@ class Gui:
 
 
 	def move_resize_window(self, event) -> None:
-		"""\nUpdates the `text_label` text-wrap on window resize/move.\n"""
+		"""\nUpdates the `text_label` wrap length on window resize & move.\n"""
 		if event.x == self.x and event.y == self.y:
-			self.frame.config(padx=20, pady=20)
 			self.text_label.config(wraplength=self.w-50)
-			self.root.update()
 
 
 	def exit_window(self) -> None:
@@ -145,7 +144,7 @@ class Gui:
 		self.root.destroy()
 
 
-	def run(self, ms:float=0.01) -> None:
+	def run(self) -> None:
 		"""\nStarts the `root` window's main loop.\n"""
 		self.root.mainloop()
 
