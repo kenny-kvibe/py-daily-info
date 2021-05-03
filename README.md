@@ -9,25 +9,24 @@ Python - Script that shows Daily Information of **Horoscope & Numerology**
 # Example Main Usage:
 
 ```sh
-git clone https://github.com/kenny-kvibe/py-daily-info DailyInfo
-cd DailyInfo
-python ./main.py 1991-12-31
+git clone https://github.com/kenny-kvibe/py-daily-info
+python ./py-daily-info/main.py 1991-12-31
 ```
 
-# Example Modules Usage:
+# Example Modules Usage (*in python*):
 
 ### DailyNumber
 
 ```py
-from numerology import DailyNumber as DN
-dn: DN = DN('1991-12-31')
+from numerology import DailyNumber
+dn = DailyNumber('1991-12-31')
 dn.print()
 ```
 
 ### DailyHoroscope
 
 ```py
-from horoscope import DailyHoroscope as DH
-dh: DH = DH('1991-12-31')
+from horoscope import DailyHoroscope
+dh = DailyHoroscope('1991-12-31')
 dh.print()
 ```
