@@ -2,14 +2,11 @@ def main() -> int:
 	from gui_window import Gui
 	from numerology import DailyNumber
 	from horoscope import DailyHoroscope
-	d: str
-	t: str
-	gui: Gui
 	try:
-		d = '1995-12-26'
-		t = '\n'
+		d: str = '1990-01-31'
+		t: str = '\n'
 		t = t.join(f'{t} ~ {repr(i)} ~{t+t}{i}' for i in (DailyHoroscope(d), DailyNumber(d)))+t
-		gui = Gui('Horoscope & Numerology', t)
+		gui: Gui = Gui('Horoscope & Numerology', t)
 		gui.button_click()
 		gui.run()
 	except:
