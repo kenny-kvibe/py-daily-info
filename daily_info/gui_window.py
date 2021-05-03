@@ -150,13 +150,19 @@ class Gui:
 		self.root.mainloop()
 
 
+
+# =======================================================================================================================
+
 if __name__ == '__main__':
 	from sys import exit
 	from traceback import format_exc
-	try:
+
+	def test() -> None:
 		gui: Gui = Gui('Gui Test', 'Test...', height=90)
 		gui.set_text('New Text')
 		gui.button_click()
 		gui.run()
+
+	try: test()
 	except: print(format_exc())
 	finally: exit(0)
