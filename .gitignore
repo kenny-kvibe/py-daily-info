@@ -1,0 +1,7 @@
+.git
+__pycache__
+*.*-project
+*.*-workspace
+*config.json
+INFO.md
+LICENSE
