@@ -2,17 +2,24 @@ def main() -> int:
 	from gui_window import Gui
 	from numerology import DailyNumber
 	from horoscope import DailyHoroscope
+
 	try:
-		d: str = '1990-01-31'
-		t: str = '\n'
-		t = t.join(f'{t} ~ {repr(i)} ~{t+t}{i}' for i in (DailyHoroscope(d), DailyNumber(d)))+t
-		gui: Gui = Gui('Horoscope & Numerology', t)
+		date_input: str = str(input('Enter your date of birth (YYYY-MM-DD): '))
+		default_date: str = '1991-01-31'
+		date = date_input if len(date_input) > 0 else default_date
+
+		txt: str = '\n'
+		txt = txt.join(f'{txt} ~ {repr(i)} ~{txt}{txt}{i}' for i in (DailyHoroscope(date), DailyNumber(date))) + txt
+
+		gui: Gui = Gui('Horoscope & Numerology', txt)
 		gui.button_click()
 		gui.run()
+
 	except:
-		from traceback import print_exc
-		print_exc()
+		from traceback import format_exc
+		print(format_exc())
 		return 1
+
 	return 0
 
 if __name__ == '__main__':
