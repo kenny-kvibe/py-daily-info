@@ -1,7 +1,6 @@
 .git
 __pycache__
-*.*-project
-*.*-workspace
+*.sublime*
 *config.json
 INFO.md
 LICENSE
