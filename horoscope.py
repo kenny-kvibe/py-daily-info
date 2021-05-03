@@ -4,7 +4,16 @@ from dataclasses import dataclass, field, InitVar
 
 @dataclass(repr=False)
 class DailyHoroscope:
-	"""\n# Get your Daily Horoscope of today.\n"""
+	"""\n# Get your Daily Horoscope of today.\n
+	Fetch your Daily Horoscope from an URL for today based on provided `_birth_date` argument.\n
+	(Today's date is used if the `_new_date` argument is an empty string.)\n
+	Example Usage:\n
+	```py
+	birth: str = '1990-12-31'
+	dh = DailyHoroscope(birth)
+	dh.print()
+	```\n
+	"""
 
 	_birth_date: InitVar[str] = field()
 	_new_date:   InitVar[str] = field(default=str())
@@ -15,16 +24,7 @@ class DailyHoroscope:
 
 
 	def __post_init__(self, _birth_date:str, _new_date:str, _file_name:str, _run:bool, _print:bool) -> None:
-		"""\n\n#### Daily Horoscope\n
-		Fetch your Daily Horoscope from an URL for today based on provided `_birth_date` argument.\n
-		(Today's date is used if the `_new_date` argument is an empty string.)\n
-		Example Usage:\n
-		```py
-		birth: str = '1990-12-31'
-		dh = DailyHoroscope(birth)
-		dh.print()
-		```\n
-		"""
+		"""\nDaily Horoscope\n"""
 		self.log: list[str] = list()
 
 		self.description: str = ''
@@ -54,6 +54,7 @@ class DailyHoroscope:
 
 	@property
 	def dates(self) -> str:
+		"""\n`dates` property (birth_date, new_date)\n"""
 		return f'{self.birth_date:%d.%b.%Y}, {self.new_date:%d.%b.%Y}'
 
 
@@ -151,7 +152,7 @@ class DailyHoroscope:
 				print(f'[{log}]')
 
 
-	def print(self, show_source:bool=False):
+	def print(self, show_source:bool=False) -> None:
 		"""\nPrints '`self`' as string, with optional url-source.\n"""
 		_string: str = str(self)
 		if show_source == True:
@@ -164,14 +165,14 @@ class DailyHoroscope:
 		return f'DailyHoroscope({self.dates}, {self.sun_sign.capitalize()})'
 
 
-	def __str__(self):
+	def __str__(self) -> str:
 		"""\nReturns the fetched Horoscope info`*` with dates or just the dates.\n(`*` => if the data was fetched)\n"""
 		if self.description != '':
 			return f'Your Daily Horoscope, {self.sun_sign.capitalize()}.\n{self.description}'
 		return f'Daily Horoscope [{self.dates}]'
 
 
-	def run(self):
+	def run(self) -> ...:
 		"""\nUpdates the info, fetches the horoscope description and returns self.\n"""
 		self.request_info()
 		return self

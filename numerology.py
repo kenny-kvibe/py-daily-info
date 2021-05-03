@@ -4,7 +4,17 @@ from dataclasses import dataclass, field, InitVar
 
 @dataclass(repr=False)
 class DailyNumber:
-	"""\n# Get your Daily Number of a day.\n"""
+	"""\n# Get your Daily Number of a day.\n
+	Calculate your Daily Number by adding your birth's day & month to another date's day, month & year.\n
+	(Today's date is used if the `_new_date` argument is an empty string.)\n
+	Example Usage:\n
+	```py
+	birth: str = '1990-12-31'
+	_date: str = '2022-01-01'
+	dn = DailyNumber(birth, _date)
+	dn.print()
+	```\n
+	"""
 
 	_birth_date: InitVar[str] = field()
 	_new_date:   InitVar[str] = field(default=str())
@@ -15,17 +25,7 @@ class DailyNumber:
 
 
 	def __post_init__(self, _birth_date:str, _new_date:str, _file_name:str, _run:bool, _print:bool) -> None:
-		"""\n\n#### Daily Number\n
-		Calculate your Daily Number by adding your birth's day & month to another date's day, month & year.\n
-		(Today's date is used if the `_new_date` argument is an empty string.)\n
-		Example Usage:\n
-		```py
-		birth: str = '1990-12-31'
-		_date: str = '2022-01-01'
-		dn = DailyNumber(birth, _date)
-		dn.print()
-		```\n
-		"""
+		"""\nDaily Number\n"""
 		self.log: list[str] = list()
 
 		self.number: int = 0
@@ -56,6 +56,7 @@ class DailyNumber:
 
 	@property
 	def dates(self) -> str:
+		"""\n`dates` property (birth_date, new_date)\n"""
 		return f'{self.birth_date:%d.%b.%Y}, {self.new_date:%d.%b.%Y}'
 
 
@@ -176,7 +177,7 @@ class DailyNumber:
 		return self.number
 
 
-	def run(self):
+	def run(self) -> ...:
 		"""\nCalculates the numbers and returns self.\n"""
 		self.calc_numbers()
 		return self
