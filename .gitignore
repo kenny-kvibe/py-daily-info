@@ -2,5 +2,5 @@
 __pycache__
 *.sublime*
 *config.json
-INFO.md
+*INFO.md
 LICENSE
