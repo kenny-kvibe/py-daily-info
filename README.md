@@ -41,6 +41,14 @@ dh = DailyHoroscope('1991-12-31')
 dh.print()
 ```
 
+#### Gui:
+
+```py
+from daily_info.gui_window import Gui
+gui = Gui('Window Title', 'Text')
+gui.set_text('NewText').button_click().run()
+```
+
 ## User-Input Sequence Check
 
 **`1.`** &rarr;  `.env` file with the `DATE_OF_BIRTH` variable<br>
