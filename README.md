@@ -38,8 +38,9 @@ dh.print()
 ```
 
 ## User-Input Sequence Check
-1.  `.env` file with the `DATE_OF_BIRTH` variable
-2.  CLI's 1. argument
-3.  Python's `input()`
+
+**(1.)** &rarr;  `.env` file with the `DATE_OF_BIRTH` variable<br>
+**(2.)** &rarr;  CLI's 1. argument<br>
+**(3.)** &rarr;  Python's `input()`
 
 -------------------------------------------------------------------------------
