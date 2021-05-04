@@ -2,12 +2,16 @@
 
 > Python script that shows Daily Information of **Horoscope** & **Numerology**
 
+-------------------------------------------------------------------------------
+
 ## Contents
 
 #### Module:
+
 - `daily_info`
 
 #### Classes:
+
 - `daily_info.numerology.DailyNumber()`
 - `daily_info.horoscope.DailyHoroscope()`
 - `daily_info.gui_window.Gui()`
