@@ -45,11 +45,13 @@ dh.print()
 
 ```py
 from daily_info.gui_window import Gui
-gui = Gui('Window Title', 'Text')
-gui.set_text('NewText').button_click().run()
+gui = Gui('Title')
+gui.set_text('Text')\
+   .button_click()\
+   .run()
 ```
 
-## User-Input Sequence Check
+## User Input Check Sequence
 
 **`1.`** &rarr;  `.env` file with the `DATE_OF_BIRTH` variable<br>
 **`2.`** &rarr;  CLI's 1. argument<br>
