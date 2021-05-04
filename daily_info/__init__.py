@@ -10,33 +10,32 @@ def main_run(argv:list[str]) -> int:
 			from .horoscope  import DailyHoroscope
 
 		default_date: str = '1991-01-31'
-		env_date: str
 		date_len: int = 10
 		date: str
 		text: str
 		gui: Gui
 
-		try:
-			# Load the `.env` file variables.
-			from os import getenv, environ
-			from dotenv import find_dotenv, load_dotenv
 
-			env_var: str = 'DATE_OF_BIRTH'
-			env_path: str = str(find_dotenv(filename='.env'))
-			env_loaded: bool = load_dotenv(dotenv_path=env_path)
+		# Load the `.env` file variables as environment variables.
+		from os import getenv, environ
+		from dotenv import find_dotenv, load_dotenv
 
-			env_date = environ[env_var] if (env_loaded and env_var in environ.keys()) else str()
-		except KeyError:
-			env_date = str()
+		env_var: str = 'DATE_OF_BIRTH'
+		env_path: str = '.env'
+		env_path = str(find_dotenv(filename=env_path))
+
+		env_date: str = str()
+		if len(env_path) > 0 and (load_dotenv(dotenv_path=env_path) and env_var in environ.keys()):
+			env_date = (environ[env_var] or environ.get(env_var) or getenv(env_var) or env_date).strip()
 
 		# Check user input (from `.env`, `argv[]` or `input()`) & set the date from it.
-		if len(env_date) >= date_len:
-			date = env_date.strip()
+		if len(env_date) == date_len:
+			date = env_date
 		elif len(argv) >= 2 and len(argv[1]) >= date_len:
 			date = argv[1].strip()
 		else:
 			input_date: str = input('Please enter your date of birth (YYYY-MM-DD): ').strip()
-			date = input_date if len(input_date) >= date_len else default_date
+			date = input_date if len(input_date) == date_len else default_date
 
 		# Initialize objects & create the text from their data.
 		text = '\n'.join(f'\n ~ {repr(i)} ~\n\n{i}' for i in (DailyHoroscope(date), DailyNumber(date))) + '\n'
