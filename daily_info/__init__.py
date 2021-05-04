@@ -9,19 +9,40 @@ def main_run(argv:list[str]) -> int:
 			from .numerology import DailyNumber
 			from .horoscope  import DailyHoroscope
 
+		default_date: str = '1991-01-31'
+		env_date: str
+		date_len: int = 10
 		date: str
-		txt: str
+		text: str
 		gui: Gui
 
-		if len(argv) > 1 and len(argv[1]) > 0:
-			date = argv[1]
+		try:
+			# Load the `.env` file variables.
+			from os import getenv, environ
+			from dotenv import find_dotenv, load_dotenv
+
+			env_var: str = 'DATE_OF_BIRTH'
+			env_path: str = str(find_dotenv(filename='.env'))
+			env_loaded: bool = load_dotenv(dotenv_path=env_path)
+
+			env_date = environ[env_var] if (env_loaded and env_var in environ.keys()) else str()
+		except KeyError:
+			env_date = str()
+
+		# Check user input (from `.env`, `argv[]` or `input()`) & set the date from it.
+		if len(env_date) >= date_len:
+			date = env_date.strip()
+		elif len(argv) >= 2 and len(argv[1]) >= date_len:
+			date = argv[1].strip()
 		else:
-			input_date: str = str(input('Please enter your date of birth (YYYY-MM-DD): '))
-			date = input_date if len(input_date) > 0 else '1991-01-31'
+			input_date: str = input('Please enter your date of birth (YYYY-MM-DD): ').strip()
+			date = input_date if len(input_date) >= date_len else default_date
 
-		txt = '\n'.join(f'\n ~ {repr(i)} ~\n\n{i}' for i in (DailyHoroscope(date), DailyNumber(date))) + '\n'
+		# Initialize objects & create the text from their data.
+		text = '\n'.join(f'\n ~ {repr(i)} ~\n\n{i}' for i in (DailyHoroscope(date), DailyNumber(date))) + '\n'
 
-		gui = Gui('Horoscope & Numerology', txt)
+		# Create the GUI with text.
+		gui = Gui('Horoscope & Numerology', text)
 		gui.button_click()
 		gui.run()
 
