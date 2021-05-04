@@ -12,14 +12,14 @@
 - `daily_info.horoscope.DailyHoroscope()`
 - `daily_info.gui_window.Gui()`
 
-## Example Main Usage
+## Main Usage
 
 ```sh
 git clone https://github.com/kenny-kvibe/py-daily-info
 python ./py-daily-info/main.py 1991-12-31
 ```
 
-## Example Modules Usage (*in python*)
+## Example Usage (*in python*)
 
 #### DailyNumber:
 
@@ -38,8 +38,8 @@ dh.print()
 ```
 
 ## Module Input Sequence Check
-- `.env` file with the `DATE_OF_BIRTH` variable
-- CLI's 1. argument
-- Python's `input()`
+ 1. `.env` file with the `DATE_OF_BIRTH` variable
+ 2. CLI's 1. argument
+ 3. Python's `input()`
 
 -------------------------------------------------------------------------------
