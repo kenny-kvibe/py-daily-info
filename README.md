@@ -37,9 +37,9 @@ dh = DailyHoroscope('1991-12-31')
 dh.print()
 ```
 
-## Module Input Sequence Check
- 1. `.env` file with the `DATE_OF_BIRTH` variable
- 2. CLI's 1. argument
- 3. Python's `input()`
+## User-Input Sequence Check
+1.  `.env` file with the `DATE_OF_BIRTH` variable
+2.  CLI's 1. argument
+3.  Python's `input()`
 
 -------------------------------------------------------------------------------
