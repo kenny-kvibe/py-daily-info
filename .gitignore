@@ -1,7 +1,5 @@
 .git
 __pycache__
-*.sublime*
-*config.json
 *INFO.md
 LICENSE
 *.env
