@@ -1,39 +1,44 @@
-from datetime import datetime
-from json import loads as json_loads
-from dataclasses import dataclass, field, InitVar
+#!/usr/bin/env python3
+import bs4
+import datetime as dt
+import dataclasses as d
+import json
+import os.path
+import requests
 
-@dataclass(repr=False)
+
+@d.dataclass(repr=False)
 class DailyHoroscope:
-	"""\n# Get your Daily Horoscope of today.\n
-	Fetch your Daily Horoscope from an URL for today based on provided `_birth_date` argument.\n
-	(Today's date is used if the `_new_date` argument is an empty string.)\n
-	Example Usage:\n
-	```py
-	birth: str = '1990-12-31'
-	dh = DailyHoroscope(birth)
-	dh.print()
-	```\n
+	"""
+# Get your Daily Horoscope of today.
+Fetch your Daily Horoscope from an URL for today based on provided `_birth_date` argument.
+(Today's date is used if the `_target_date` argument is an empty string.)
+Example Usage:
+```py
+birth: str = '1990-12-31'
+dh = DailyHoroscope(birth)
+dh.print()
+```
 	"""
 
-	_birth_date: InitVar[str] = field()
-	_new_date:   InitVar[str] = field(default=str())
-	_file_name:  InitVar[str] = field(default=str())
+	_birth_date:  d.InitVar[str] = d.field()
+	_target_date: d.InitVar[str] = d.field(default=str())
+	_file_name:   d.InitVar[str] = d.field(default=str())
 
-	_run:   InitVar[bool] = field(default=True)
-	_print: InitVar[bool] = field(default=False)
+	_run:   d.InitVar[bool] = d.field(default=True)
+	_print: d.InitVar[bool] = d.field(default=False)
 
-
-	def __post_init__(self, _birth_date:str, _new_date:str, _file_name:str, _run:bool, _print:bool) -> None:
-		"""\nDaily Horoscope\n"""
+	def __post_init__(self, _birth_date:str, _target_date:str, _file_name:str, _run:bool, _print:bool) -> None:
+		""" Daily Horoscope """
 		self.log: list[str] = list()
 
 		self.description: str = ''
 		self.sun_sign: str
 		self.url: str
 
-		self.new_date: datetime
-		self.birth_date: datetime
-		self.set_dates(_birth_date, _new_date)
+		self.target_date: dt.datetime
+		self.birth_date: dt.datetime
+		self.set_dates(_birth_date, _target_date)
 
 		self.json_path: str
 		self.json_data: list[dict[str, str]]
@@ -51,43 +56,43 @@ class DailyHoroscope:
 			if len(self.log) > 0:
 				self.print_logs()
 
-
 	@property
 	def dates(self) -> str:
-		"""\n`dates` property (birth_date, new_date)\n"""
-		return f'{self.birth_date:%d.%b.%Y}, {self.new_date:%d.%b.%Y}'
+		""" `dates` property (birth_date, target_date) """
+		return f'{self.birth_date:%d.%b.%Y}, {self.target_date:%d.%b.%Y}'
 
+	def set_dates(self, birth_date:str='', target_date:str='') -> None:
+		"""
+		Updates the date with the provided argument while
+		checking if it's in the ISO format '`YYYY-MM-DD`'.
+		"""
 
-	def set_dates(self, birth_date:str='', new_date:str='') -> None:
-		"""\nUpdates the date with the provided argument while checking if it's in the ISO format '`YYYY-MM-DD`'.\n"""
-		_now: datetime = datetime.now()
-		self.new_date = _now
+		_now: dt.datetime = dt.datetime.now()
+		self.target_date = _now
 
-		if new_date != '':
+		if target_date != '':
 			try:
-				self.new_date = datetime.fromisoformat(new_date)
+				self.target_date = dt.datetime.fromisoformat(target_date)
 			except:
-				self.new_date = _now
-				self.log.append('Error - Argument \'new_date\' is not in ISO format (YYYY-MM-DD), using today\'s date.')
+				self.target_date = _now
+				self.log.append('Error - Argument \'target_date\' is not in ISO format (YYYY-MM-DD), using today\'s date.')
 
 		if birth_date != '':
 			try:
-				self.birth_date = datetime.fromisoformat(birth_date)
+				self.birth_date = dt.datetime.fromisoformat(birth_date)
 			except:
-				self.birth_date = self.new_date
-				self.log.append('Error - Argument \'birth_date\' is not in ISO format (YYYY-MM-DD), using the \'new_date\' date.')
+				self.birth_date = self.target_date
+				self.log.append('Error - Argument \'birth_date\' is not in ISO format (YYYY-MM-DD), using the \'target_date\' date.')
 		else:
-			self.birth_date = self.new_date
-
+			self.birth_date = self.target_date
 
 	def load_json(self, json_name:str) -> None:
-		"""\nLoads horoscope dates from JSON file.\n"""
-		from os.path import (join as join_path, dirname)
+		""" Loads horoscope dates from JSON file. """
 
-		_json_name: str = join_path('data', self.json_name)
+		_json_name: str = os.path.join('data', self.json_name)
 		if len(json_name) > 0:
 			_json_name = json_name
-		self.json_path = join_path(dirname(__file__), _json_name)
+		self.json_path = os.path.join(os.path.dirname(__file__), _json_name)
 		self.json_data = []
 
 		try:
@@ -98,34 +103,34 @@ class DailyHoroscope:
 			if len(_str) <= 2:
 				raise Exception
 
-			self.json_data = json_loads(_str)
+			self.json_data = json.loads(_str)
 		except:
 			self.log.append(f'Error - JSON File \'{self.json_path}\' wasn\'t used.')
 
-
 	def request_info(self) -> None:
-		"""\nFetches the horoscope description from an URL and saves it as `dict`.\n"""
-		from requests import (post as post_req, models as reqmodels)
+		""" Fetches the horoscope description from an URL and saves it as `dict`. """
 
 		self.description = ''
 		self.update_info()
 
 		try:
-			_response: reqmodels.Response = post_req(self.url)
+			_response: requests.models.Response = requests.post(self.url)
 
 			if _response.status_code == 200:
-				from bs4 import BeautifulSoup
 
-				_bs_string: str = BeautifulSoup(_response.text, features="lxml").find('script', { 'type': 'application/ld+json' }).string
-				_bs_json: dict[str, str] = json_loads(_bs_string)
+				_bs_string: str = str(bs4.BeautifulSoup(_response.text, features="lxml").find('script', { 'type': 'application/ld+json' }).string)
+				_bs_json: dict[str, str] = json.loads(_bs_string)
 
 				self.description = _bs_json['articleBody'].encode('utf-8').replace(b'\xe2\x80\x99', b'\'').decode('utf-8')
-		except:
+		except Exception as e:
+			print(e)
 			self.log.append(f'Error - Website \'{self.url} is Unreachable.')
 
-
 	def update_info(self) -> None:
-		"""\nUpdates the description and the sun sign`*` based on the birth date.\n(`*` => if the json file was loaded)\n"""
+		"""
+		Updates the description and the sun sign`*` based on the birth date.
+		(`*` if the json file was loaded)
+		"""
 		self.sun_sign = self.json_data[0]['name']
 
 		_data: tuple[list[str], list[str]]
@@ -141,56 +146,52 @@ class DailyHoroscope:
 					self.sun_sign = self.json_data[int(i + 1 if i < len(self.json_data) else 0)]['name']
 				break
 
-		_params: str = f'{self.sun_sign.lower()}/{self.new_date:%Y-%m-%d}'
+		_params: str = f'{self.sun_sign.lower()}/{self.target_date:%Y-%m-%d}'
 		self.url = f'https://www.tarot.com/daily-horoscope/{_params}'
 
-
 	def print_logs(self) -> None:
-		"""\nPrints each log in [] brackets on its line.\n"""
+		""" Prints each log in [] brackets on its line. """
 		if len(self.log) > 0:
 			for log in self.log:
 				print(f'[{log}]')
 
-
 	def print(self, show_source:bool=False) -> None:
-		"""\nPrints '`self`' as string, with optional url-source.\n"""
+		""" Prints '`self`' as string, with optional url-source. """
 		_string: str = str(self)
 		if show_source == True:
 			_string += f'\n# Source: {self.url}'
 		print(_string)
 
-
 	def __repr__(self) -> str:
-		"""\nReturns dates arguments of the Class as a string.\n"""
+		""" Returns dates arguments of the Class as a string. """
 		return f'DailyHoroscope({self.dates}, {self.sun_sign.capitalize()})'
 
-
 	def __str__(self) -> str:
-		"""\nReturns the fetched Horoscope info`*` with dates or just the dates.\n(`*` => if the data was fetched)\n"""
+		"""
+		Returns the fetched Horoscope info`*` with dates or just the dates.
+		(`*` if the data was fetched)
+		"""
 		if self.description != '':
 			return f'Your Daily Horoscope, {self.sun_sign.capitalize()}.\n{self.description}'
 		return f'Daily Horoscope [{self.dates}]'
 
-
 	def run(self) -> ...:
-		"""\nUpdates the info, fetches the horoscope description and returns self.\n"""
+		""" Updates the info, fetches the horoscope description and returns self. """
 		self.request_info()
 		return self
-
 
 
 # =======================================================================================================================
 
 if __name__ == '__main__':
-	from sys import exit
 	from traceback import format_exc
 
 	def test() -> None:
 		dh: DailyHoroscope
-		dh = DailyHoroscope('1991-12-31')
+		dh = DailyHoroscope('1999-01-31')
 		dh.print()
 		dh.print_logs()
 
 	try: test()
 	except: print(format_exc())
-	finally: exit(0)
+	finally: raise SystemExit(0)

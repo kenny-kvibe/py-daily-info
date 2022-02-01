@@ -1,31 +1,35 @@
-from datetime import datetime
-from json import loads as json_loads
-from dataclasses import dataclass, field, InitVar
+#!/usr/bin/env python3
+import datetime as dt
+import dataclasses as d
+import json
+import os.path
 
-@dataclass(repr=False)
+
+@d.dataclass(repr=False)
 class DailyNumber:
-	"""\n# Get your Daily Number of a day.\n
-	Calculate your Daily Number by adding your birth's day & month to another date's day, month & year.\n
-	(Today's date is used if the `_new_date` argument is an empty string.)\n
-	Example Usage:\n
-	```py
-	birth: str = '1990-12-31'
-	_date: str = '2022-01-01'
-	dn = DailyNumber(birth, _date)
-	dn.print()
-	```\n
+	"""
+# Get your Daily Number of a day.
+Calculate your Daily Number by adding your birth's day & month to another date's day, month & year.
+(Today's date is used if the `_target_date` argument is an empty string.)
+Example Usage:
+```py
+birth_date: str = '1990-12-31'
+today_date: str = '2022-01-01'
+dn = DailyNumber(birth_date, today_date)
+dn.print()
+```
 	"""
 
-	_birth_date: InitVar[str] = field()
-	_new_date:   InitVar[str] = field(default=str())
-	_file_name:  InitVar[str] = field(default=str())
+	_birth_date:  d.InitVar[str] = d.field()
+	_target_date: d.InitVar[str] = d.field(default=str())
+	_file_name:   d.InitVar[str] = d.field(default=str())
 
-	_run:   InitVar[bool] = field(default=True)
-	_print: InitVar[bool] = field(default=False)
+	_run:   d.InitVar[bool] = d.field(default=True)
+	_print: d.InitVar[bool] = d.field(default=False)
 
 
-	def __post_init__(self, _birth_date:str, _new_date:str, _file_name:str, _run:bool, _print:bool) -> None:
-		"""\nDaily Number\n"""
+	def __post_init__(self, _birth_date:str, _target_date:str, _file_name:str, _run:bool, _print:bool) -> None:
+		""" Daily Number """
 		self.log: list[str] = list()
 
 		self.number: int = 0
@@ -33,9 +37,9 @@ class DailyNumber:
 		self.description: str
 		self.information: str
 
-		self.new_date: datetime
-		self.birth_date: datetime
-		self.set_dates(_birth_date, _new_date)
+		self.target_date: dt.datetime
+		self.birth_date: dt.datetime
+		self.set_dates(_birth_date, _target_date)
 
 		self.json_path: str
 		self.json_data: dict[str, str]
@@ -53,43 +57,46 @@ class DailyNumber:
 			if len(self.log) > 0:
 				self.print_logs()
 
-
 	@property
 	def dates(self) -> str:
-		"""\n`dates` property (birth_date, new_date)\n"""
-		return f'{self.birth_date:%d.%b.%Y}, {self.new_date:%d.%b.%Y}'
+		""" `dates` property (birth_date, target_date) """
+		return f'{self.birth_date:%d.%b.%Y}, {self.target_date:%d.%b.%Y}'
 
+	def set_dates(self, birth_date:str='', target_date:str='') -> None:
+		"""
+		Updates the dates with the provided arguments while
+		checking if they're in the ISO format '`YYYY-MM-DD`'.
+		"""
 
-	def set_dates(self, birth_date:str='', new_date:str='') -> None:
-		"""\nUpdates the dates with the provided arguments while checking if they're in the ISO format '`YYYY-MM-DD`'.\n"""
-		_now: datetime = datetime.now()
-		self.new_date = _now
+		_now: dt.datetime = dt.datetime.now()
+		self.target_date = _now
 
-		if new_date != '':
+		if target_date != '':
 			try:
-				self.new_date = datetime.fromisoformat(new_date)
+				self.target_date = dt.datetime.fromisoformat(target_date)
 			except:
-				self.new_date = _now
-				self.log.append('Error - Argument \'new_date\' is not in ISO format (YYYY-MM-DD), using today\'s date.')
+				self.target_date = _now
+				self.log.append('Error - Argument \'target_date\' is not in ISO format (YYYY-MM-DD), using today\'s date.')
 
 		if birth_date != '':
 			try:
-				self.birth_date = datetime.fromisoformat(birth_date)
+				self.birth_date = dt.datetime.fromisoformat(birth_date)
 			except:
-				self.birth_date = self.new_date
-				self.log.append('Error - Argument \'birth_date\' is not in ISO format (YYYY-MM-DD), using the \'new_date\' date.')
+				self.birth_date = self.target_date
+				self.log.append('Error - Argument \'birth_date\' is not in ISO format (YYYY-MM-DD), using the \'target_date\' date.')
 		else:
-			self.birth_date = self.new_date
-
+			self.birth_date = self.target_date
 
 	def load_json(self, json_name:str) -> None:
-		"""\nLoads numbers descriptions from JSON file containing '`number`' & '`description`' key-value pairs.\n"""
-		from os.path import (join as join_path, dirname)
+		"""
+		Loads numbers descriptions from JSON file
+		containing '`number`' & '`description`' key-value pairs.
+		"""
 
-		_json_name: str = join_path('data', self.json_name)
+		_json_name: str = os.path.join('data', self.json_name)
 		if len(json_name) > 0:
 			_json_name = json_name
-		self.json_path = join_path(dirname(__file__), _json_name)
+		self.json_path = os.path.join(os.path.dirname(__file__), _json_name)
 		self.json_data = {}
 
 		try:
@@ -100,13 +107,16 @@ class DailyNumber:
 			if len(_str) <= 2:
 				raise Exception
 
-			self.json_data = json_loads(_str)
+			self.json_data = json.loads(_str)
 		except:
 			self.log.append(f'Error - JSON File \'{self.json_path}\' wasn\'t used, no description will be added.')
 
-
 	def update_info(self) -> None:
-		"""\nUpdates the description & information with if-any json-loaded description & calculated numbers with dates.\n"""
+		"""
+		Updates the description & information with if-any json-loaded
+		description & calculated numbers with dates.
+		"""
+
 		_all_nums: set[int] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 22, 33}
 		self.description = ''
 
@@ -119,22 +129,27 @@ class DailyNumber:
 		else:
 			self.information = f'Daily Number [{self.dates}]'
 
-
 	def calc_numbers(self) -> None:
-		"""\nCalculates and the numbers digits of both dates and\nthe daily number with the sum of digits of both dates.\n"""
+		"""
+		Calculates and the numbers digits of both dates and
+		the daily number with the sum of digits of both dates.
+		"""
 		self.numbers = (
 			self.add_digits(self.birth_date.day),
 			self.add_digits(self.birth_date.month),
-			self.add_digits(self.new_date.day),
-			self.add_digits(self.new_date.month),
-			self.add_digits(self.new_date.year)
+			self.add_digits(self.target_date.day),
+			self.add_digits(self.target_date.month),
+			self.add_digits(self.target_date.year)
 		)
 		self.number = self.add_digits(sum(self.numbers))
 		self.update_info()
 
-
 	def add_digits(self, num:int, check:bool=True) -> int:
-		"""\nAdds all digits together with filtered master numbers and returns the resulted sum.\n"""
+		"""
+		Adds all digits together with filtered master
+		numbers and returns the resulted sum.
+		"""
+
 		_numbers: tuple[int, ...] = tuple(int(i) for i in str(num))
 
 		if len(_numbers) > 1:
@@ -147,55 +162,50 @@ class DailyNumber:
 			return _num
 		return num
 
-
 	def print(self) -> None:
-		"""\nPrints '`self`' as string.\n"""
+		""" Prints '`self`' as string. """
 		print(self)
 
-
 	def print_logs(self) -> None:
-		"""\nPrints each log in [] brackets on its line.\n"""
+		""" Prints each log in [] brackets on its line. """
 		if len(self.log) > 0:
 			for log in self.log:
 				print(f'[{log}]')
 
-
 	def __repr__(self) -> str:
-		"""\nReturns dates arguments of the Class as a string.\n"""
+		""" Returns dates arguments of the Class as a string. """
 		return f'DailyNumber({self.dates}, {self.number})'
 
-
 	def __str__(self) -> str:
-		"""\nReturns information and description`*` as a string.\n(`*` => if the json file was loaded)\n"""
+		"""
+		Returns information and description`*` as a string.
+		(`*` if the json file was loaded)
+		"""
 		return self.information + (f'\n{self.description}' if len(self.description) > 0 else '')
 
-
 	def __int__(self) -> int:
-		"""\nReturns calculated number, or calculates and returns it.\n"""
+		""" Returns calculated number, or calculates and returns it. """
 		if self.number == 0:
 			self.calc_numbers()
 		return self.number
 
-
 	def run(self) -> ...:
-		"""\nCalculates the numbers and returns self.\n"""
+		""" Calculates the numbers and returns self. """
 		self.calc_numbers()
 		return self
-
 
 
 # ===========================================================================================================
 
 if __name__ == '__main__':
-	from sys import exit
 	from traceback import format_exc
 
 	def test() -> None:
 		dn: DailyNumber
-		dn = DailyNumber('1991-12-31')
+		dn = DailyNumber('1999-01-31')
 		dn.print()
 		dn.print_logs()
 
 	try: test()
 	except: print(format_exc())
-	finally: exit(0)
+	finally: raise SystemExit(0)

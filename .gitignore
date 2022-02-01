@@ -1,5 +1,3 @@
 .git
-__pycache__
-*INFO.md
-LICENSE
-*.env
+**/__pycache__
+venv

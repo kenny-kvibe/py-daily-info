@@ -1,5 +1,13 @@
-from daily_info import main_run
-from sys import exit, argv
+#!/usr/bin/env python3
+import daily_info
+import json
 
-code: int = main_run(argv)
-exit(code)
+
+def main() -> int:
+	with open('DATA.json', 'r') as file:
+		date = json.loads(file.read())['DATE_OF_BIRTH']
+	return daily_info.main_run(date)
+
+
+if __name__ == '__main__':
+	raise SystemExit(main())
